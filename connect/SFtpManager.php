@@ -7,23 +7,22 @@ use yii\base\Component;
 
 define('NET_SFTP_LOGGING', 'NET_SFTP_LOG_COMPLEX');
 
-
 /**
  * Class SFtpManager
- *
  * @mixin SFTP;
- *
  * @package Apolon
  */
 class SFtpManager extends Component
 {
-
-
+    /**
+     * Type dir
+     */
     const TYPE_DIR = 2;
 
-
+    /**
+     * Type file
+     */
     const TYPE_FILE = 1;
-
 
     /**
      * @var array
@@ -70,14 +69,14 @@ class SFtpManager extends Component
     public function scanDir($dir = ".", $recursive = false)
     {
         $this->elements = [];
-        
         $list = $this->connect->rawlist($dir, $recursive);
         usort($list, function ($attr) {
             return ($attr["type"] == self::TYPE_DIR) ? false : true;
         });
         foreach ($list as $element => $attr) {
-            if ($attr['filename'] != '.' && $attr['filename'] != '..')
+            if ($attr['filename'] != '.' && $attr['filename'] != '..') {
                 array_push($this->elements, (object)$attr);
+            }
         }
         return $this->elements;
     }
@@ -89,13 +88,13 @@ class SFtpManager extends Component
      */
     public function __call($name, $param)
     {
-        if (method_exists($this->connect, $name)){
-            if (!empty($param) && is_array($param))
+        if (method_exists($this->connect, $name)) {
+            if (!empty($param) && is_array($param)) {
                 return call_user_func_array([$this->connect, $name], $param);
-
+            }
             return $this->connect->$name();
-        } else return parent::__call($name, $param);
-
+        }
+        return parent::__call($name, $param);
     }
 
     /**
@@ -108,7 +107,7 @@ class SFtpManager extends Component
 
     /**
      * @return array
-    */
+     */
     public function getFiles()
     {
         return $this->getByProp('type', self::TYPE_FILE);
@@ -129,9 +128,6 @@ class SFtpManager extends Component
         return $elements;
     }
 
-
-
-
     /**
      * @param $archiveName
      * @param $remotePathElement
@@ -141,15 +137,13 @@ class SFtpManager extends Component
     public function createTarArchive($archiveName, $remotePathElement)
     {
         $archive = new \stdClass();
-        if (!strripos($archiveName, ".tar"))
+        if (!strripos($archiveName, ".tar")) {
             throw new \Exception("extension archive should be .tar");
-
+        }
         $archive->name = $archiveName;
         $archive->path = $this->realpath("./") . "/{$archiveName}";
         $this->execCommand("tar -cf $archive->name $remotePathElement");
-
         return $archive;
-
     }
 
     /**
@@ -161,7 +155,6 @@ class SFtpManager extends Component
         return $this->connect->exec($command);
     }
 
-
     /**
      * @param $remoteFileName
      * @param $localFileName
@@ -170,14 +163,10 @@ class SFtpManager extends Component
     public function saveFile($remoteFileName, $localFileName)
     {
         if ($this->connect->is_file($remoteFileName)) {
-            return $this->connect->get(
-                $remoteFileName,
-                $localFileName);
+            return $this->connect->get($remoteFileName, $localFileName);
         }
-
         return false;
     }
-
 
 }
 
