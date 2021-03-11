@@ -9,7 +9,7 @@ define('NET_SFTP_LOGGING', 'NET_SFTP_LOG_COMPLEX');
 
 /**
  * Class SFtpManager
- * @mixin SFTP;
+ * @mixin SFTP
  * @package Apolon
  */
 class SFtpManager extends Component
